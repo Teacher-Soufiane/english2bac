@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English2BAC Listening Quiz 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;family=Poppins:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root{--navy:#123b68;--blue:#2563eb;--pale:#eaf4ff;--green:#16803c;--red:#c33737;--gray:#64748b}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Poppins,Cairo,sans-serif;color:#18324d}
+    button{font:inherit} button:focus-visible,.choice:focus-visible,.syn-tile:focus-visible,.topic-chip:focus-visible{outline:3px solid #fbbf24;outline-offset:3px}
+    .quiz-header{background-color:#eaf4ff;padding:12px 18px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+    .header-teacher-img,.header-logo-img{height:64px;width:auto;max-width:none;object-fit:contain}
+    .header-logo-img{justify-self:end}.header-title{text-align:center;line-height:1.2}.title-line1{font-family:Poppins,sans-serif;font-size:26px;font-weight:800;color:#1e3a5f}.title-line2{font-family:Poppins,sans-serif;font-size:18px;font-weight:400;color:#2563eb}.title-line3{font-family:Poppins,sans-serif;font-size:14px;font-weight:400;color:#64748b}
+    .info-bar{background:#123b68;color:#fff;padding:10px 22px;display:grid;grid-template-columns:1fr 2fr 1fr;gap:12px;font-size:13px;font-weight:700;letter-spacing:.03em}.info-bar span:nth-child(2){text-align:center}.info-bar span:last-child{text-align:right}
+    .page-shell{width:100%;min-height:calc(100 * min(var(--vh, 1vh), 1vh));background:#f4f7fb;padding:20px}.quiz-panel{max-width:970px;margin:auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 12px 32px rgba(18,59,104,.14)}
+    .instruction{background:#123b68;color:#fff;border-radius:12px;padding:16px 20px;font-weight:800;letter-spacing:.03em;margin:16px 0}.task{font-size:19px;font-weight:700;line-height:1.5;margin:18px 0}
+    .listen-banner{font-weight:800;color:#123b68;background:#eaf4ff;padding:10px 14px;border-left:5px solid #2563eb;border-radius:8px}.audio-box{margin-top:12px;background:#f8fafc;border:1px solid #d7e2ee;border-radius:14px;padding:15px}.avatars{display:flex;justify-content:center;gap:28px;margin-bottom:12px}.avatar{text-align:center;font-weight:700;color:#123b68}.avatar-icon{width:48px;height:48px;background:#eaf4ff;border-radius:50%;display:grid;place-items:center;font-size:28px;margin:auto auto 4px}
+    .controls{display:flex;justify-content:center;gap:12px}.audio-btn{min-width:94px;padding:10px 14px;border:0;border-radius:10px;background:#123b68;color:#fff;font-weight:800;cursor:pointer}.audio-btn:disabled{background:#9ca3af;cursor:not-allowed}.progress-track{height:7px;border-radius:99px;background:#dce6f1;margin-top:15px;overflow:hidden}.progress-fill{height:100%;width:0;background:#2563eb;transition:width .1s}
+    .choices{display:grid;gap:11px}.choice,.syn-tile{border:2px solid #d5dfeb;background:#fff;color:#18324d;border-radius:11px;padding:14px;text-align:left;font-weight:600;cursor:pointer;transition:.18s}.choice:hover,.syn-tile:hover{border-color:#2563eb;background:#f0f6ff}.correct{background:#e9f9ef!important;border-color:#16803c!important;color:#126432!important}.wrong{background:#fff0f0!important;border-color:#c33737!important;color:#a61e1e!important}.selected{background:#eaf4ff!important;border-color:#2563eb!important}.muted-option{opacity:.62;background:#f1f5f9!important}.target-word{text-align:center;font-size:34px;font-weight:800;color:#123b68;margin:16px 0}.syn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.syn-tile{text-align:center;min-height:72px;position:relative}.tag{font-size:11px;background:#64748b;color:#fff;border-radius:99px;padding:3px 7px;margin-left:7px}
+    .feedback{margin-top:16px;border-radius:10px;padding:13px;font-weight:700}.feedback.good{background:#e9f9ef;color:#126432}.feedback.bad{background:#fff0f0;color:#a61e1e}.explanation{margin-top:8px;padding:12px;background:#f6f8fb;border-left:4px solid #2563eb;border-radius:6px;font-weight:500}
+    .navigation{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:24px}.nav-btn,.action-btn{border:0;border-radius:10px;padding:11px 16px;background:#123b68;color:white;font-weight:800;cursor:pointer}.nav-btn:last-child{text-align:right}.nav-btn:disabled{background:#9ca3af;cursor:not-allowed}.counter{font-weight:800}.stats{margin-top:14px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;border-top:1px solid #dbe5ee;padding-top:14px;font-size:14px;font-weight:700}
+    .warm-list{display:grid;gap:12px}.warm-row{display:grid;grid-template-columns:34px minmax(0,1fr) minmax(160px,250px);gap:10px;align-items:center;border:1px solid #d7e2ee;border-radius:12px;padding:12px}.warm-num{font-size:19px;font-weight:800;color:#2563eb}.drop-slot{min-height:52px;border:2px dashed #8aa7c4;border-radius:9px;padding:6px;display:flex;align-items:center;justify-content:center;background:#f8fbff}.drop-slot.over{border-color:#2563eb;background:#eaf4ff}.chip-tray{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;padding:14px;border-radius:12px;background:#f4f7fb;min-height:68px}.topic-chip{touch-action:none;user-select:none;border:0;border-radius:99px;background:#2563eb;color:#fff;padding:10px 15px;font-weight:700;cursor:grab;position:relative;z-index:2}.topic-chip.dragging{z-index:20;opacity:.92;cursor:grabbing}.topic-chip.placed{background:#16803c;cursor:default}.topic-chip.flash-wrong{background:#c33737}
+    .warm-actions{margin-top:20px;text-align:center}.action-btn:disabled{background:#9ca3af;cursor:not-allowed}.result{text-align:center}.score-badge{margin:20px auto;width:170px;height:170px;border:10px solid #2563eb;border-radius:50%;display:grid;place-items:center;font-size:27px;font-weight:800;color:#123b68}.remark{font-size:30px;font-weight:800;color:#16803c;min-height:45px}.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;text-align:left;margin:20px 0}.summary-item,.category-line{background:#f5f8fc;padding:12px;border-radius:10px;font-weight:600}.result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0}.accordion{margin-top:18px;text-align:left;border:1px solid #d7e2ee;border-radius:10px;overflow:hidden}.accordion summary{padding:14px;font-weight:800;cursor:pointer;background:#f8fafc}.transcript-group{padding:14px;border-top:1px solid #e2e8f0}.line{padding:5px 0}.review-group{margin:18px 0;text-align:left}.review-card{border:1px solid #d7e2ee;border-radius:12px;padding:14px;margin-top:10px}.confetti{position:fixed;width:10px;height:15px;top:-20px;animation:fall 3.5s linear forwards;pointer-events:none}@keyframes fall{to{transform:translateY(calc(100 * min(var(--vh, 1vh), 1vh))) rotate(720deg);opacity:0}}
+    @media(min-width:600px){.header-teacher-img,.header-logo-img{height:80px}}@media(min-width:1024px){.header-teacher-img,.header-logo-img{height:96px}}
+    @media(max-width:640px){.header-teacher-img,.header-logo-img{height:45px}.quiz-header{padding:8px 12px}.title-line1{font-size:17px}.title-line2{font-size:12px}.title-line3{font-size:10px}.info-bar{grid-template-columns:1fr;font-size:11px;text-align:center}.info-bar span:nth-child(2),.info-bar span:last-child{text-align:center}.page-shell{padding:10px}.quiz-panel{padding:16px;border-radius:12px}.warm-row{grid-template-columns:28px 1fr}.drop-slot{grid-column:2;min-height:52px}.syn-grid{grid-template-columns:repeat(2,1fr)}.controls{flex-wrap:wrap}.audio-btn{min-width:82px}.task{font-size:17px}.stats{justify-content:flex-start;gap:9px}.navigation{gap:7px}.nav-btn{padding:10px;font-size:13px}}
+    @media print{.quiz-header,.info-bar,.result-actions,.navigation,.audio-box{display:none!important}.page-shell{padding:0;background:#fff}.quiz-panel{box-shadow:none;max-width:none}.accordion{display:block!important}}
+  </style>
+ </head>
+ <body>
+  <header class="quiz-header"><img class="header-teacher-img" src="teacher.png" alt="Teacher Soufiane">
+   <div class="header-title">
+    <div class="title-line1">
+     English2BAC Quizzes
+    </div>
+    <div class="title-line2">
+     Learn • Practice • Succeed
+    </div>
+    <div class="title-line3">
+     with Teacher.Soufiane
+    </div>
+   </div><img class="header-logo-img" src="logo.png" alt="Level-UP 2BAC">
+  </header>
+  <section class="info-bar" aria-label="Quiz information"><span>UNIT: 1</span><span>EXPRESSING &amp; RESPONDING TO OPINION</span><span>LISTENING - QUIZ 1</span>
+  </section>
+  <main class="page-shell">
+   <section class="quiz-panel" id="app" aria-live="polite"></section>
+  </main>
+  <audio id="dialogueAudio" preload="auto" style="display:none"></audio>
+  <script>
+  // Safe wrapper: some browsers block localStorage inside an iframe (LearnWorlds).
+  // Without this the results screen throws and never renders.
+  const store={
+    get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+    set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  };
+
+  const quizConfig={
+    audioFiles:{
+      category1:"https://raw.githubusercontent.com/Teacher-Soufiane/unit1-listening/main/Audio%201%20Homework.mp3",
+      category2:"https://raw.githubusercontent.com/Teacher-Soufiane/unit1-listening/main/Audio%202%20School%20Uniforms.mp3",
+      category3:"https://raw.githubusercontent.com/Teacher-Soufiane/unit1-listening/main/Audio%203%20Mobile%20Phones%20%20Reasons.mp3",
+      category4:"https://raw.githubusercontent.com/Teacher-Soufiane/unit1-listening/main/Audio%204%20Saturday%20Sports%20Practice.mp3"
+    },
+    listeningLabels:{category1:"Listening 1: Homework",category2:"Listening 2: School Uniforms",category3:"Listening 3: Mobile Phones",category4:"Listening 4: Saturday Sports Practice"},
+    speakers:{category1:{male:"Omar",female:"Jasmine"},category2:{male:"Ahmed",female:"Sara"},category3:{male:"Sifaw",female:"Tonarouz"},category4:{male:"John",female:"Christina"}},
+    warmUpItems:[
+      {topic:"Homework",opinion:"It should be limited so students have time for other activities."},
+      {topic:"School Uniforms",opinion:"They save time in the morning but can limit personal style."},
+      {topic:"Mobile Phones",opinion:"They're useful for research but can easily become a distraction."},
+      {topic:"Saturday Sports Practice",opinion:"It takes real commitment, even on a day usually meant for resting."}
+    ],
+    transcripts:{
+      category1:[["Omar","Do you think teachers give too much homework these days?"],["Jasmine","Honestly, I think the amount is fine, but I disagree with weekend deadlines."],["Omar","Fair point. What about after-school clubs — should they count as homework too?"],["Jasmine","I don't think so. Clubs should stay optional and fun."],["Omar","True. And what about group projects graded the same for everyone?"],["Jasmine","That's actually something I feel strongly about — it isn't fair to grade everyone the same."],["Omar","I see what you mean. So overall, what change would you suggest?"],["Jasmine","I'd suggest schools set a clear weekly homework limit for every subject."]],
+      category2:[["Ahmed","I think school uniforms make mornings so much easier."],["Sara","I completely agree with you. No more deciding what to wear!"],["Ahmed","But some people say uniforms limit self-expression."],["Sara","I'm afraid I have to disagree there. Students can still express themselves in other ways."],["Ahmed","What about the cost? Some families struggle to afford them."],["Sara","You've got a point. I actually agree that schools should offer financial support."],["Ahmed","So, do you think uniforms should stay compulsory?"],["Sara","Absolutely, I agree — as long as there's support for families in need."]],
+      category3:[["Sifaw","I think phones should be allowed for research in class."],["Tonarouz","What's your reason for that?"],["Sifaw","Well, textbooks go out of date, but the internet is always current."],["Tonarouz","That's true, but I still worry students would get distracted."],["Sifaw","I understand, but teachers could set specific research tasks with a time limit."],["Tonarouz","That could work. What about students without a phone?"],["Sifaw","Good point — the school could provide a few shared tablets for those students."],["Tonarouz","That sounds fair. I think that solves the main problem."]],
+      category4:[["John","Our coach wants us to practice on Saturday mornings now."],["Christina","Really? I thought practice was only on weekdays."],["John","It used to be, but the team is preparing for the regional tournament."],["Christina","That makes sense. Is attendance at Saturday practice compulsory?"],["John","Yes, unless a student has a valid family or medical reason."],["Christina","Good to know. Will there still be a break during the winter holidays?"],["John","Yes, practice pauses for two full weeks over the winter break."],["Christina","Perfect, I'll add that to my calendar."]]
+    }
+  };
+
+  const Q=(category,question,task,choices,correctAnswer,explanation)=>({type:"single",category,question,task,choices,correctAnswer,explanation});
+  const S=(targetWord,options,correctSynonyms,antonym,explanation)=>({type:"syn",category:"Three Synonyms Challenge",question:"SELECT THE THREE WORDS THAT ARE SYNONYMS OF THE TARGET WORD.",targetWord,options,correctSynonyms,antonym,explanation});
+  const questions=[
+    Q("category1","LISTEN AND IDENTIFY WHAT IS BEING DISCUSSED.","What are Omar and Jasmine discussing about homework at the start of the conversation?",["Whether the amount of homework is reasonable","Whether homework should be banned completely","Whether homework helps students sleep better","Whether homework should be done in groups"],"Whether the amount of homework is reasonable","Omar asks if teachers give too much homework, and Jasmine says the amount is fine but disagrees with weekend deadlines."),
+    Q("category1","LISTEN AND IDENTIFY WHAT IS BEING DISCUSSED.","What specific issue do they discuss regarding after-school clubs?",["Whether clubs should count as homework","Whether clubs should be cancelled","Whether clubs need more funding","Whether clubs should be graded"],"Whether clubs should count as homework","Omar asks whether after-school clubs should count as homework, and Jasmine says clubs should stay optional and fun."),
+    Q("category1","LISTEN AND IDENTIFY WHAT IS BEING DISCUSSED.","What do they discuss about group projects?",["Whether it's fair to grade everyone the same","Whether group projects should be banned","Whether groups should be bigger","Whether projects should be done at home"],"Whether it's fair to grade everyone the same","Jasmine feels strongly that it isn't fair to grade every group member the same."),
+    Q("category1","LISTEN AND IDENTIFY WHAT IS BEING DISCUSSED.","What idea does Jasmine suggest at the end of the conversation?",["A clear weekly homework limit for every subject","Removing all deadlines completely","Longer school holidays","More group projects instead of individual homework"],"A clear weekly homework limit for every subject","Jasmine concludes by suggesting schools set a clear weekly homework limit for every subject."),
+    Q("category2","LISTEN AND DECIDE: DOES THE SPEAKER AGREE OR DISAGREE?","When Ahmed says uniforms make mornings easier, does Sara agree or disagree?",["Agree","Disagree"],"Agree","Sara says “I completely agree with you” right after Ahmed's comment."),
+    Q("category2","LISTEN AND DECIDE: DOES THE SPEAKER AGREE OR DISAGREE?","When people say uniforms limit self-expression, does Sara agree or disagree with that view?",["Agree","Disagree"],"Disagree","Sara says “I'm afraid I have to disagree there” about the self-expression argument."),
+    Q("category2","LISTEN AND DECIDE: DOES THE SPEAKER AGREE OR DISAGREE?","About the cost of uniforms, does Sara agree or disagree that schools should help?",["Agree","Disagree"],"Agree","Sara says schools should offer financial support."),
+    Q("category2","LISTEN AND DECIDE: DOES THE SPEAKER AGREE OR DISAGREE?","Does Sara agree that uniforms should stay compulsory?",["Agree","Disagree"],"Agree","Sara says “Absolutely, I agree” about keeping uniforms compulsory."),
+    Q("category3","LISTEN AND CHOOSE THE REASON GIVEN.","What reason does Sifaw give for allowing phones for research?",["Textbooks go out of date but the internet stays current","Phones are cheaper than textbooks","Phones are required by the new curriculum","Phones help students socialize"],"Textbooks go out of date but the internet stays current","Sifaw explains that textbooks go out of date, but the internet is always current."),
+    Q("category3","LISTEN AND CHOOSE THE REASON GIVEN.","What reason does Tonarouz give for worrying about phones?",["Students would get distracted","Phones are too expensive","Phones break easily","Phones are bad for students' eyes"],"Students would get distracted","Tonarouz says she worries students would get distracted."),
+    Q("category3","LISTEN AND CHOOSE THE REASON GIVEN.","What reason does Sifaw give for using time-limited research tasks?",["To stop the research task from becoming a distraction","To make homework shorter","To save the school money","To help teachers grade faster"],"To stop the research task from becoming a distraction","Sifaw proposes time-limited tasks to address the distraction concern."),
+    Q("category3","LISTEN AND CHOOSE THE REASON GIVEN.","What reason does Sifaw give for providing shared tablets?",["So students without a phone aren't left out","So the school can track student locations","So teachers can save paper","So students can play games at break time"],"So students without a phone aren't left out","Shared tablets solve the problem of students without phones."),
+    Q("category4","LISTEN AND CHOOSE TRUE OR FALSE.","Saturday practice was already part of the schedule before this term.",["True","False"],"False","John confirms weekday practice was the previous schedule."),
+    Q("category4","LISTEN AND CHOOSE TRUE OR FALSE.","The team is preparing for a regional tournament.",["True","False"],"True","John explains Saturday practice is for the regional tournament."),
+    Q("category4","LISTEN AND CHOOSE TRUE OR FALSE.","Attendance at Saturday practice is completely optional.",["True","False"],"False","Attendance is compulsory except for valid family or medical reasons."),
+    Q("category4","LISTEN AND CHOOSE TRUE OR FALSE.","Practice pauses for two weeks during winter break.",["True","False"],"True","John confirms practice pauses for two full weeks."),
+    S("AGREE",["concur","consent","accept","refuse"],["concur","consent","accept"],"refuse","Concur, consent, and accept mean to agree. Refuse means the opposite."),
+    S("DISAGREE",["object","oppose","dispute","approve"],["object","oppose","dispute"],"approve","Object, oppose, and dispute mean to disagree. Approve means the opposite."),
+    S("OPINION",["viewpoint","belief","perspective","fact"],["viewpoint","belief","perspective"],"fact","Viewpoint, belief, and perspective describe an opinion. A fact is objectively true."),
+    S("CONVINCING",["persuasive","compelling","credible","unconvincing"],["persuasive","compelling","credible"],"unconvincing","Persuasive, compelling, and credible describe convincing arguments. Unconvincing means the opposite.")
+  ];
+
+  const app=document.getElementById("app"),audio=document.getElementById("dialogueAudio");
+  let current=0,answers=questions.map(()=>({answered:false,correct:false,selected:[]})),timerSeconds=0,timerId=null,activeCategory="",audioBroken=false,synEvaluationTimer=null;
+
+  const Timer={
+    start(){if(!timerId)timerId=setInterval(()=>{timerSeconds++;updateStats()},1000)},
+    pause(){clearInterval(timerId);timerId=null},
+    reset(){this.pause();timerSeconds=0},
+    format(s=timerSeconds){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+  };
+
+  function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+  function feedback(ok){return ok?["Excellent!","Great Job!","Perfect!","Keep Going!"][Math.floor(Math.random()*4)]:["Almost!","Review this rule.","Keep learning!","You'll get the next one!"][Math.floor(Math.random()*4)]}
+  function categoryName(c){return ({category1:"Topic Identification",category2:"Agree/Disagree",category3:"Reason Given",category4:"True/False","syn":"Synonyms Challenge"})[c]||c}
+
+  function renderWarmup(){
+    Timer.reset();audio.pause();activeCategory="";
+    let chips=shuffle(quizConfig.warmUpItems);
+    if(chips.every((x,i)=>x.topic===quizConfig.warmUpItems[i].topic)) chips=[chips[1],chips[0],chips[2],chips[3]];
+    app.innerHTML=`<div class="instruction">GETTING READY: MATCH EACH TOPIC WITH THE OPINION ABOUT IT.</div>
+      <div class="warm-list">${quizConfig.warmUpItems.map((item,i)=>`<div class="warm-row"><div class="warm-num">${i+1}</div><div>${item.opinion}</div><div class="drop-slot" data-topic="${item.topic}" aria-label="Drop slot for opinion ${i+1}"></div></div>`).join("")}</div>
+      <div id="chipTray" class="chip-tray">${chips.map(x=>`<button type="button" class="topic-chip" data-topic="${x.topic}">${x.topic}</button>`).join("")}</div>
+      <div class="warm-actions"><button id="startQuiz" class="action-btn" type="button" disabled>Start Quiz</button></div>`;
+    document.querySelectorAll(".topic-chip").forEach(setupChip);
+    document.getElementById("startQuiz").onclick=()=>{current=0;Timer.start();renderQuestion()};
+  }
+
+  function setupChip(chip){
+    let startX=0,startY=0,dragging=false;
+    chip.addEventListener("pointerdown",e=>{
+      if(chip.classList.contains("placed"))return;
+      dragging=true;startX=e.clientX;startY=e.clientY;chip.setPointerCapture(e.pointerId);chip.classList.add("dragging");
+    });
+    chip.addEventListener("pointermove",e=>{
+      if(!dragging)return;
+      chip.style.transform=`translate(${e.clientX-startX}px,${e.clientY-startY}px)`;
+      document.querySelectorAll(".drop-slot").forEach(slot=>{
+        const r=slot.getBoundingClientRect(),inside=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
+        slot.classList.toggle("over",inside);
+      });
+    });
+    const finish=e=>{
+      if(!dragging)return;dragging=false;chip.releasePointerCapture?.(e.pointerId);chip.classList.remove("dragging");
+      const cx=e.clientX,cy=e.clientY;let hit=[...document.querySelectorAll(".drop-slot")].find(slot=>{let r=slot.getBoundingClientRect();return cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom});
+      document.querySelectorAll(".drop-slot").forEach(s=>s.classList.remove("over"));chip.style.transform="";
+      if(hit&&hit.dataset.topic===chip.dataset.topic){hit.appendChild(chip);chip.classList.add("placed");checkWarmComplete()}
+      else if(hit){chip.classList.add("flash-wrong");setTimeout(()=>chip.classList.remove("flash-wrong"),450)}
+    };
+    chip.addEventListener("pointerup",finish);chip.addEventListener("pointercancel",finish);
+  }
+  function checkWarmComplete(){if(document.querySelectorAll(".topic-chip.placed").length===4)document.getElementById("startQuiz").disabled=false}
+
+  function renderQuestion(){
+    clearTimeout(synEvaluationTimer);
+    const q=questions[current],state=answers[current];
+    // Question UI is intentionally rendered before any audio module work.
+    app.innerHTML=`<div id="questionContent"></div>`;
+    const root=document.getElementById("questionContent");
+    root.insertAdjacentHTML("beforeend",`<div id="audioMount"></div><div class="instruction">${q.question}</div><div class="task">${q.type==="syn"?`<div class="target-word">${q.targetWord}</div>`:q.task}</div><div id="answerMount"></div><div class="navigation"><button class="nav-btn" id="previousBtn" type="button" ${current===0?"disabled":""}>◀ Previous</button><div class="counter">${current+1} / 20</div><button class="nav-btn" id="nextBtn" type="button" ${!state.answered?"disabled":""}>Next ▶</button></div><div id="stats" class="stats"></div>`);
+    if(q.type==="single")renderSingle(q,state);else renderSynonyms(q,state);
+    document.getElementById("previousBtn").onclick=()=>{if(current>0){current--;renderQuestion()}};
+    document.getElementById("nextBtn").onclick=()=>{if(!state.answered)return;if(current===19)renderResults();else{current++;renderQuestion()}};
+    updateStats();
+    // Audio remains isolated so audio errors cannot stop displayed task/choices.
+    try{setupAudioForCategory(q.category)}catch(e){console.error("Audio module initialization failed",e)}
+  }
+
+  function renderSingle(q,state){
+    const options=state.order||(state.order=shuffle(q.choices));
+    const mount=document.getElementById("answerMount");
+    mount.innerHTML=`<div class="choices">${options.map((option,i)=>`<button type="button" class="choice ${state.answered?(option===q.correctAnswer?"correct":state.selected[0]===option?"wrong":""):""}" data-option="${i}" ${state.answered?"disabled":""}>${option}</button>`).join("")}</div>${state.answered?feedbackBlock(q,state):""}`;
+    if(!state.answered)mount.querySelectorAll(".choice").forEach(btn=>btn.onclick=()=>{
+      const selected=options[Number(btn.dataset.option)];state.selected=[selected];state.answered=true;state.correct=selected===q.correctAnswer;playEffect(state.correct?"good":"bad");renderQuestion();
+    });
+  }
+
+  // One state array is the only source of truth for all synonym tile selections.
+  function renderSynonyms(q,state){
+    const options=state.order||(state.order=shuffle(q.options)),mount=document.getElementById("answerMount");
+    mount.innerHTML=`<div class="syn-grid">${options.map((option,i)=>{let c="";if(state.answered){if(q.correctSynonyms.includes(option))c="correct";else if(state.selected.includes(option))c="wrong";else c="muted-option"}else if(state.selected.includes(option))c="selected";return `<button type="button" class="syn-tile ${c}" data-index="${i}" ${state.answered?"disabled":""}>${option}${state.answered&&option===q.antonym?`<span class="tag">${state.selected.includes(option)?"antonym, not a synonym":"antonym"}</span>`:""}</button>`}).join("")}</div>${state.answered?feedbackBlock(q,state):""}`;
+    if(!state.answered)mount.querySelectorAll(".syn-tile").forEach(tile=>tile.onclick=()=>{
+      const option=options[Number(tile.dataset.index)];
+      // Fresh synchronous read/write makes every first, second and third click reliable.
+      if(state.selected.includes(option)){state.selected=state.selected.filter(x=>x!==option);clearTimeout(synEvaluationTimer);playEffect("click");renderSynonyms(q,state);return}
+      if(state.selected.length>=3)return;
+      state.selected.push(option);playEffect("click");renderSynonyms(q,state);
+      if(state.selected.length===3){
+        synEvaluationTimer=setTimeout(()=>{
+          if(state.selected.length!==3||state.answered)return;
+          state.correct=q.correctSynonyms.every(x=>state.selected.includes(x));
+          state.answered=true; // Same lock flag immediately unlocks Next.
+          playEffect(state.correct?"good":"bad");renderQuestion();
+        },500);
+      }
+    });
+  }
+
+  function feedbackBlock(q,state){return `<div class="feedback ${state.correct?"good":"bad"}">${feedback(state.correct)}</div><div class="explanation">${q.explanation}</div>`}
+  function updateStats(){const correct=answers.filter(x=>x.answered&&x.correct).length,wrong=answers.filter(x=>x.answered&&!x.correct).length;let stats=document.getElementById("stats");if(stats)stats.innerHTML=`<span>✅ Correct: ${correct}</span><span>❌ Wrong: ${wrong}</span><span>Remaining: ${20-correct-wrong}</span><span>Score: ${correct.toFixed(2)} /20</span><span>Timer ${Timer.format()}</span>`}
+
+  // Native audio module: isolated from renderQuestion and guarded against media failures.
+  function setupAudioForCategory(category){
+    const mount=document.getElementById("audioMount");
+    if(category==="Three Synonyms Challenge"){audio.pause();mount.innerHTML="";return}
+    if(activeCategory!==category){
+      audio.pause();activeCategory=category;audioBroken=false;
+      audio.src=quizConfig.audioFiles[category];audio.load();
+      audio.currentTime=0;
+    }
+    const people=quizConfig.speakers[category];
+    mount.innerHTML=`<div class="listen-banner">${quizConfig.listeningLabels[category]}</div><div class="audio-box"><div class="avatars"><div class="avatar"><div class="avatar-icon">👨</div>${people.male}</div><div class="avatar"><div class="avatar-icon">👩</div>${people.female}</div></div><div class="controls"><button id="back10" class="audio-btn" type="button">◀◀ 10</button><button id="playPause" class="audio-btn" type="button">▶</button><button id="forward10" class="audio-btn" type="button">10 ▶▶</button></div><div class="progress-track"><div id="progressFill" class="progress-fill"></div></div><div id="audioError" style="display:none;margin-top:10px;color:#64748b;font-weight:700">Audio couldn't be loaded — ask your teacher for the printed transcript.</div></div>`;
+    bindAudioControls();
+  }
+
+  function bindAudioControls(){
+    const play=document.getElementById("playPause"),back=document.getElementById("back10"),forward=document.getElementById("forward10");
+    if(!play)return;
+    const disable=()=>{[play,back,forward].forEach(x=>x.disabled=true);document.getElementById("audioError").style.display="block"};
+    audio.onerror=disable;
+    audio.onplay=()=>{if(document.getElementById("playPause"))document.getElementById("playPause").textContent="⏸"};
+    audio.onpause=()=>{if(document.getElementById("playPause"))document.getElementById("playPause").textContent="▶"};
+    audio.ontimeupdate=()=>{const fill=document.getElementById("progressFill");if(fill&&Number.isFinite(audio.duration))fill.style.width=`${(audio.currentTime/audio.duration)*100}%`};
+    play.onclick=()=>{
+      if(audio.paused){
+        // play() is called synchronously in the direct click handler.
+        const promise=audio.play();
+        if(promise&&promise.then)promise.then(()=>{}).catch(err=>{console.error("Audio playback failed",err);play.textContent="▶";play.disabled=false});
+      }else audio.pause();
+    };
+    // Separate literal handlers prevent sign reversal or modulo-wrap bugs.
+    back.onclick=()=>{if(!Number.isFinite(audio.duration))return;audio.currentTime=Math.max(0,audio.currentTime-10)};
+    forward.onclick=()=>{if(!Number.isFinite(audio.duration))return;audio.currentTime=Math.min(audio.duration,audio.currentTime+10)};
+    [play,back,forward].forEach(el=>el.onkeydown=e=>{
+      if(e.key===" "){e.preventDefault();play.click()}
+      if(e.key==="ArrowLeft"){e.preventDefault();back.click()}
+      if(e.key==="ArrowRight"){e.preventDefault();forward.click()}
+    });
+  }
+
+  function playEffect(kind){
+    if(audio&&!audio.paused)return;
+    try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=kind==="good"?660:kind==="bad"?200:440;g.gain.setValueAtTime(.04,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.13);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+.14)}catch(e){}
+  }
+
+  function transcriptAccordion(){return `<details class="accordion"><summary>Show Transcripts</summary>${Object.keys(quizConfig.transcripts).map(c=>`<div class="transcript-group"><strong>${quizConfig.listeningLabels[c]}</strong>${quizConfig.transcripts[c].map(x=>`<div class="line"><b>${x[0]}:</b> ${x[1]}</div>`).join("")}</div>`).join("")}</details>`}
+  function renderResults(){
+    Timer.pause();audio.pause();const score=answers.filter(a=>a.correct).length,wrong=20-score,accuracy=(score/20*100).toFixed(0),attempts=Number(store.get("quizAttempts")||0)+1,best=Math.max(Number(store.get("quizBestScore")||0),score);
+    store.set("quizAttempts",attempts);store.set("quizBestScore",best);store.set("quizLastScore",score);store.set("quizTime",Timer.format());
+    const remark=score<10?"Fail":score<12?"Pass":score<14?"Fairly Good":score<16?"Good":score<18?"Very Good":"Excellent!";
+    const cats=["category1","category2","category3","category4","syn"];
+    app.innerHTML=`<div class="result"><h1>English2BAC Listening Quiz 1</h1><p>Unit 1 · EXPRESSING &amp; RESPONDING TO OPINION · LISTENING - QUIZ 1</p><div class="score-badge">${score.toFixed(2)} /20</div><div id="remark" class="remark">...</div><div class="summary-grid"><div class="summary-item">Final Score<br><b>${score.toFixed(2)} /20</b></div><div class="summary-item">Correct Answers<br><b>${score}</b></div><div class="summary-item">Wrong Answers<br><b>${wrong}</b></div><div class="summary-item">Accuracy<br><b>${accuracy}%</b></div><div class="summary-item">Time Taken<br><b>${Timer.format()}</b></div><div class="summary-item">Attempts<br><b>${attempts}</b></div><div class="summary-item">Best Score<br><b>${best.toFixed(2)} /20</b></div></div><h2>Category Breakdown</h2>${cats.map((c,i)=>`<div class="category-line">${categoryName(c)}: ${answers.slice(i*4,i*4+4).filter(a=>a.correct).length}/4</div>`).join("")}<div class="result-actions"><button id="review" class="action-btn">Review My Answers</button><button id="restart" class="action-btn">Restart Quiz</button><button id="print" class="action-btn">Print Results</button><button id="save" class="action-btn">Save Results</button></div>${transcriptAccordion()}</div>`;
+    animateRemark(remark);if(score>=16)confetti();
+    document.getElementById("review").onclick=renderReview;document.getElementById("restart").onclick=restart;document.getElementById("print").onclick=()=>window.print();document.getElementById("save").onclick=saveResults;
+  }
+  function animateRemark(final){const all=["Fail","Pass","Fairly Good","Good","Very Good","Excellent!"],el=document.getElementById("remark");let n=0;const id=setInterval(()=>{el.textContent=all[n++%all.length]},110);setTimeout(()=>{clearInterval(id);el.textContent=final},3000)}
+  function confetti(){for(let i=0;i<70;i++){let x=document.createElement("i");x.className="confetti";x.style.left=Math.random()*100+"%";x.style.background=["#2563eb","#16803c","#fbbf24","#c33737"][i%4];x.style.animationDelay=Math.random()*1.4+"s";document.body.appendChild(x);setTimeout(()=>x.remove(),5000)}}
+  function saveResults(){const text=`English2BAC Listening Quiz 1\nScore: ${answers.filter(a=>a.correct).length}.00 /20\nTime Taken: ${Timer.format()}\n\n${Object.keys(quizConfig.transcripts).map(c=>quizConfig.listeningLabels[c]+"\n"+quizConfig.transcripts[c].map(x=>x[0]+": "+x[1]).join("\n")).join("\n\n")}`;const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));a.download="English2BAC-Listening-Quiz-Results.txt";a.click();URL.revokeObjectURL(a.href)}
+  function renderReview(){audio.pause();app.innerHTML=`<h1>Review My Answers</h1>${transcriptAccordion()}${["category1","category2","category3","category4","syn"].map((cat,g)=>`<section class="review-group"><h2>${categoryName(cat)}</h2>${questions.slice(g*4,g*4+4).map((q,i)=>{let a=answers[g*4+i];return `<article class="review-card"><b>Question ${g*4+i+1}</b><p>${q.type==="syn"?`Target Word: <b>${q.targetWord}</b><br>Student's 3 selections: ${a.selected.join(", ")}<br>Correct 3 synonyms: ${q.correctSynonyms.join(", ")}<br>Antonym: ${q.antonym}`:`${q.task}<br>Student Answer: <span style="color:${a.correct?"#16803c":"#c33737"}">${a.selected[0]||"No answer"}</span><br>Correct Answer: <b>${q.correctAnswer}</b>`}</p><div class="explanation">${q.explanation}</div></article>`}).join("")}</section>`).join("")}<div class="result-actions"><button id="backResults" class="action-btn">Back to Results</button><button id="restartReview" class="action-btn">Restart Quiz</button></div>`;document.getElementById("backResults").onclick=renderResults;document.getElementById("restartReview").onclick=restart}
+  function restart(){audio.pause();audio.currentTime=0;activeCategory="";current=0;answers=questions.map(()=>({answered:false,correct:false,selected:[]}));Timer.reset();renderWarmup()}
+
+  document.addEventListener("keydown",e=>{
+    if(["INPUT","TEXTAREA","BUTTON"].includes(document.activeElement.tagName)&&document.activeElement.closest(".audio-box"))return;
+    if(!document.getElementById("questionContent"))return;
+    const q=questions[current],state=answers[current];
+    if(e.key==="ArrowLeft")document.getElementById("previousBtn")?.click();
+    if(e.key==="ArrowRight"&&state.answered)document.getElementById("nextBtn")?.click();
+    if(/^[1-4]$/.test(e.key)&&!state.answered){const buttons=[...document.querySelectorAll(q.type==="syn"?".syn-tile":".choice")];buttons[Number(e.key)-1]?.click()}
+  });
+
+  renderWarmup();
+  </script>
+ </body>
+</html>
