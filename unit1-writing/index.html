@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writing a Paragraph Quiz</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&amp;family=Poppins:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #123b70;
+      --blue-bright: #2563eb;
+      --blue-soft: #eaf4ff;
+      --green: #16803c;
+      --green-soft: #dcfce7;
+      --red: #c92f38;
+      --red-soft: #fee2e2;
+      --gray: #64748b;
+      --ink: #1e293b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
+      font-family: "Poppins", sans-serif;
+      color: var(--ink);
+      background: #f4f8fc;
+    }
+
+    button, input { font: inherit; }
+    button:focus-visible, .sentence-card:focus-visible {
+      outline: 3px solid #f9c74f;
+      outline-offset: 3px;
+    }
+
+    .quiz-shell { width: 100%; min-height: calc(100 * min(var(--vh, 1vh), 1vh)); }
+    .quiz-header {
+      background-color: #eaf4ff;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 28px;
+      border-bottom: 1px solid #cfe3fb;
+    }
+
+    .header-teacher-img,
+    .header-logo-img {
+      height: 64px;
+      width: auto;
+      max-width: none;
+      object-fit: contain;
+      display: block;
+    }
+
+    .header-title {
+      text-align: center;
+      line-height: 1.2;
+      min-width: 0;
+    }
+
+    .title-line1 {
+      font-family: "Poppins", sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #1e3a5f;
+    }
+
+    .title-line2 {
+      font-family: "Poppins", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: #2563eb;
+    }
+
+    .title-line3 {
+      font-family: "Poppins", sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: #64748b;
+    }
+
+    .info-bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 11px 28px;
+      color: white;
+      background: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .045em;
+    }
+    .info-bar > :nth-child(2) { text-align: center; }
+    .info-bar > :last-child { text-align: right; }
+
+    .quiz-main { width: 100%; max-width: 1040px; margin: 0 auto; padding: 28px 22px 40px; }
+    .instruction-box {
+      background: var(--blue);
+      color: white;
+      text-align: center;
+      font-weight: 800;
+      letter-spacing: .035em;
+      padding: 18px 24px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(18,59,112,.16);
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .question-panel {
+      background: white;
+      margin-top: 18px;
+      border-radius: 16px;
+      box-shadow: 0 9px 26px rgba(15,23,42,.09);
+      padding: 25px;
+    }
+
+    .task-text {
+      font-size: 17px;
+      line-height: 1.75;
+      font-weight: 500;
+      color: #1e293b;
+      white-space: pre-line;
+    }
+
+    .choice-list { margin-top: 22px; display: grid; gap: 12px; }
+    .choice-btn {
+      display: flex;
+      width: 100%;
+      align-items: flex-start;
+      text-align: left;
+      gap: 13px;
+      border: 2px solid #d9e3ef;
+      background: #fff;
+      color: #243247;
+      padding: 15px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .17s ease, border-color .17s ease, background .17s ease;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: var(--blue-bright); transform: translateY(-1px); background: #f8fbff; }
+    .choice-btn:disabled { cursor: default; }
+    .choice-letter {
+      flex: 0 0 auto;
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      background: #eaf4ff;
+      color: var(--blue);
+      font-weight: 800;
+      border-radius: 50%;
+      font-size: 13px;
+    }
+    .choice-btn.correct { background: var(--green-soft); border-color: var(--green); color: #14532d; }
+    .choice-btn.incorrect { background: var(--red-soft); border-color: var(--red); color: #7f1d1d; }
+    .choice-btn.correct .choice-letter { background: var(--green); color: white; }
+    .choice-btn.incorrect .choice-letter { background: var(--red); color: white; }
+
+    .hint-box {
+      margin-top: 6px;
+      color: #45607d;
+      background: #f0f7ff;
+      border-left: 4px solid #4f8bdc;
+      padding: 10px 13px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .sentence-list { display: grid; gap: 12px; margin-top: 18px; }
+    .sentence-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border: 2px solid #d9e3ef;
+      background: #fff;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: grab;
+      user-select: none;
+      transition: border-color .15s ease, transform .15s ease, background .15s ease;
+    }
+    .sentence-card.dragging { opacity: .5; transform: scale(.985); }
+    .sentence-card.drag-over { border-color: var(--blue-bright); background: #eff6ff; }
+    .sentence-card.correct { border-color: var(--green); background: var(--green-soft); }
+    .sentence-card.incorrect { border-color: var(--red); background: var(--red-soft); }
+    .sentence-label {
+      width: 33px; height: 33px; border-radius: 8px; display: grid; place-items: center;
+      color: white; background: var(--blue); font-weight: 800;
+    }
+    .move-controls { display: flex; gap: 5px; }
+    .move-btn {
+      width: 31px; height: 31px; display: grid; place-items: center; border: 1px solid #cbd5e1;
+      background: white; color: var(--blue); border-radius: 7px; cursor: pointer;
+    }
+    .move-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .check-order-btn, .nav-btn, .result-btn {
+      border: 0;
+      cursor: pointer;
+      border-radius: 10px;
+      font-weight: 700;
+      transition: transform .17s ease, filter .17s ease;
+    }
+    .check-order-btn:hover:not(:disabled), .nav-btn:hover:not(:disabled), .result-btn:hover { transform: translateY(-1px); filter: brightness(.98); }
+    .check-order-btn:disabled, .nav-btn:disabled { cursor: not-allowed; opacity: .46; }
+    .check-order-btn { margin-top: 18px; padding: 12px 20px; background: var(--blue-bright); color: white; }
+    .correct-order { margin-top: 18px; padding: 15px; background: #ecfdf5; border: 1px solid #86efac; border-radius: 11px; color: #14532d; line-height: 1.7; }
+    .feedback {
+      margin-top: 19px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.good { background: var(--green-soft); color: #14532d; border-left: 5px solid var(--green); }
+    .feedback.bad { background: var(--red-soft); color: #7f1d1d; border-left: 5px solid var(--red); }
+    .feedback strong { display: block; margin-bottom: 4px; }
+
+    .navigation-row {
+      margin-top: 21px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 14px;
+    }
+    .nav-btn { padding: 12px 17px; background: white; color: var(--blue); border: 1px solid #cdd9e6; box-shadow: 0 4px 12px rgba(15,23,42,.05); }
+    .nav-btn:last-child { justify-self: end; background: var(--blue); color: white; border-color: var(--blue); }
+    .question-counter { font-weight: 800; color: var(--blue); }
+
+    .stats-row {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 20px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      color: #334155;
+      background: #e9f1f8;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .stats-row span { white-space: nowrap; }
+    .stats-row b { color: var(--blue); }
+
+    .result-screen, .review-screen { display: none; }
+    .result-screen.active, .review-screen.active { display: block; }
+    .quiz-screen.hidden { display: none; }
+    .result-card { background: white; border-radius: 18px; box-shadow: 0 11px 30px rgba(15,23,42,.1); padding: 30px; text-align: center; }
+    .result-kicker { color: var(--blue-bright); font-size: 13px; font-weight: 800; letter-spacing: .1em; }
+    .score-badge {
+      width: 172px; height: 172px; margin: 20px auto; border-radius: 50%;
+      background: var(--blue); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      border: 8px solid #cbe2ff; box-shadow: 0 0 0 7px #edf6ff;
+    }
+    .score-badge strong { font-size: 34px; line-height: 1; }
+    .score-badge span { margin-top: 7px; font-size: 14px; }
+    .remark { min-height: 80px; display: grid; place-items: center; font-size: 20px; font-weight: 800; color: var(--blue); }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; text-align: left; }
+    .summary-item { padding: 14px; border-radius: 10px; background: #f5f9fd; }
+    .summary-item small { display: block; color: var(--gray); font-weight: 600; }
+    .summary-item b { display: block; margin-top: 3px; color: var(--blue); }
+    .breakdown { margin-top: 23px; text-align: left; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+    .breakdown h2 { font-size: 18px; color: var(--blue); font-weight: 800; margin: 0 0 10px; }
+    .breakdown-row { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid #edf2f7; padding: 9px 2px; font-size: 14px; }
+    .result-actions { display: flex; justify-content: center; gap: 11px; flex-wrap: wrap; margin-top: 25px; }
+    .result-btn { padding: 12px 16px; background: var(--blue); color: white; }
+    .result-btn.secondary { background: #eaf4ff; color: var(--blue); border: 1px solid #bcd7fa; }
+
+    .review-title { color: var(--blue); font-size: 25px; font-weight: 800; margin-bottom: 17px; }
+    .review-task { margin: 17px 0; }
+    .review-task h2 { color: var(--blue); font-size: 18px; font-weight: 800; margin: 0 0 8px; }
+    .review-card { background: white; box-shadow: 0 4px 16px rgba(15,23,42,.08); border-radius: 12px; padding: 17px; margin-bottom: 12px; }
+    .review-card.correct-review { border-left: 5px solid var(--green); }
+    .review-card.wrong-review { border-left: 5px solid var(--red); }
+    .review-card p { margin: 7px 0; line-height: 1.55; }
+    .review-answer-label { font-weight: 800; }
+    .review-actions { margin-top: 22px; }
+
+    .confetti { position: fixed; top: -15px; width: 10px; height: 18px; z-index: 20; pointer-events: none; animation: fall 3.8s linear forwards; }
+    @keyframes fall { to { transform: translate3d(var(--x), calc(100 * min(var(--vh, 1vh), 1vh)), 0) rotate(760deg); opacity: 0; } }
+
+    @media (min-width: 600px) {
+      .header-teacher-img, .header-logo-img { height: 80px; }
+    }
+    @media (min-width: 1024px) {
+      .header-teacher-img, .header-logo-img { height: 96px; }
+    }
+    @media (max-width: 640px) {
+      .header-teacher-img, .header-logo-img { height: 45px; }
+      .quiz-header { padding: 8px 12px; gap: 8px; }
+      .title-line1 { font-size: 16px; }
+      .title-line2 { font-size: 11px; }
+      .title-line3 { font-size: 10px; }
+      .info-bar { padding: 9px 12px; font-size: 9px; gap: 7px; }
+      .quiz-main { padding: 18px 12px 28px; }
+      .question-panel { padding: 18px 15px; }
+      .instruction-box { padding: 15px 13px; font-size: 13px; }
+      .task-text { font-size: 15px; }
+      .stats-row { flex-wrap: wrap; gap: 8px 15px; font-size: 12px; }
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+      .sentence-card { grid-template-columns: auto 1fr; }
+      .move-controls { grid-column: 2; }
+    }
+  </style>
+  
+  
+ <script>(function(){var ok=true;try{window.localStorage.getItem("__t")}catch(e){ok=false}
+if(!ok){var m={};try{Object.defineProperty(window,"localStorage",{configurable:true,value:{
+getItem:function(k){return Object.prototype.hasOwnProperty.call(m,k)?m[k]:null},
+setItem:function(k,v){m[k]=String(v)},removeItem:function(k){delete m[k]},clear:function(){m={}}}})}catch(e2){}}})();</script></head>
+ <body>
+  <div class="quiz-shell">
+   <header class="quiz-header" aria-label="Quiz header"><img loading="lazy" class="header-teacher-img" src="teacher.png" alt="Teacher Soufiane">
+    <div class="header-title">
+     <div class="title-line1">English2BAC Quizzes</div>
+     <div class="title-line2">Learn • Practice • Succeed</div>
+     <div class="title-line3">with Teacher.Soufiane</div>
+    </div><img loading="lazy" class="header-logo-img" src="logo.png" alt="Level-UP 2BAC">
+   </header>
+   <section class="info-bar" aria-label="Quiz information"><span class="">UNIT: UNIT 1</span> <span class="">WRITING A PARAGRAPH</span> <span class="">PARAGRAPH WRITING - QUIZ</span>
+   </section>
+   <main class="quiz-main">
+    <section id="quiz-screen" class="quiz-screen" aria-live="polite">
+     <div id="instruction-box" class="instruction-box"></div>
+     <section id="question-panel" class="question-panel" aria-label="Question content"></section>
+     <nav class="navigation-row" aria-label="Question navigation"><button id="previous-btn" type="button" class="nav-btn"><span aria-hidden="true">◀</span> <span class="">◀ Previous</span></button> <span id="question-counter" class="question-counter" aria-live="polite"></span> <button id="next-btn" type="button" class="nav-btn"><span class="">Next ▶</span> <span aria-hidden="true">▶</span></button>
+     </nav>
+     <section class="stats-row" aria-label="Live quiz statistics"><span>✅ <span class=""></span>: <b id="correct-count">0</b></span> <span>❌ <span class=""></span>: <b id="wrong-count">0</b></span> <span><span class=""></span>: <b id="remaining-count">15</b></span> <span><span class=""></span>: <b id="score-count">0.00 /15</b></span> <span><span class=""></span> <b id="timer-count">00:00</b></span>
+     </section>
+    </section>
+    <section id="result-screen" class="result-screen" aria-live="polite">
+     <article class="result-card">
+      <p class="result-kicker"></p>
+      <h1 class="text-2xl font-extrabold text-[#123b70]">Your Results</h1>
+      <p class="mt-1 text-sm text-slate-500">PARAGRAPH WRITING - QUIZ</p>
+      <div class="score-badge"><strong id="final-score">0.00</strong> <span>/15</span>
+      </div>
+      <div id="remark" class="remark"></div>
+      <div id="summary-grid" class="summary-grid"></div>
+      <div class="breakdown">
+       <h2 class=""></h2>
+       <div id="task-breakdown"></div>
+      </div>
+      <div class="result-actions"><button id="review-btn" type="button" class="result-btn"><span class="">Review My Answers</span></button> <button id="restart-btn" type="button" class="result-btn secondary"><span class="">Restart Quiz</span></button> <button id="print-btn" type="button" class="result-btn secondary"><span class="">Print Results</span></button> <button id="save-btn" type="button" class="result-btn secondary"><span class="">Save Results</span></button>
+      </div>
+     </article>
+    </section>
+    <section id="review-screen" class="review-screen">
+     <h1 class="review-title">Review My Answers</h1>
+     <div id="review-content"></div>
+     <div class="review-actions"><button id="back-results-btn" type="button" class="result-btn"><span class="">Back to Results</span></button>
+     </div>
+    </section>
+   </main>
+  </div>
+  
+  <script>
+    const quizConfig = {
+      unit: "UNIT 1",
+      title: "WRITING A PARAGRAPH",
+      lesson: "PARAGRAPH WRITING - QUIZ",
+      randomizeQuestions: false,
+      randomizeChoices: true,
+      timerEnabled: true,
+      totalPoints: 15,
+      questions: [
+        { type:"single-choice", taskName:"Task 1 — Identify the Topic", question:"CHOOSE THE BEST TOPIC FOR THE PARAGRAPH.", task:"Many young people use social media every day. They use it to communicate with friends, share information, and follow current events. However, spending too much time online can affect their studies and social lives.", choices:["The Benefits and Risks of Social Media","The History of the Internet","Young People's School Subjects","Traditional Forms of Communication"], correctAnswer:"The Benefits and Risks of Social Media", explanation:"The paragraph discusses both the uses and possible negative effects of social media." },
+        { type:"single-choice", taskName:"Task 2 — Choose the Topic Sentence", question:"CHOOSE THE BEST TOPIC SENTENCE.", task:"Choose the best topic sentence for a paragraph about the importance of learning English.", choices:["Learning English is important for many reasons.","English is spoken in many countries.","Some students study English at school.","English has many interesting words."], correctAnswer:"Learning English is important for many reasons.", explanation:"It introduces the general idea and allows the paragraph to develop several reasons." },
+        { type:"single-choice", taskName:"Task 2 — Choose the Topic Sentence", question:"CHOOSE THE BEST TOPIC SENTENCE.", task:"Choose the best topic sentence for a paragraph about the benefits of reading.", choices:["Reading books can provide students with several important benefits.","Some books are very long.","I bought a book yesterday.","Libraries contain many different books."], correctAnswer:"Reading books can provide students with several important benefits.", explanation:"It clearly introduces the main idea that the following sentences can develop." },
+        { type:"single-choice", taskName:"Task 3 — Choose the Best Supporting Idea", question:"CHOOSE THE SENTENCE THAT BEST SUPPORTS THE TOPIC SENTENCE.", task:"Topic sentence: “Learning a foreign language can create better opportunities for young people.” Which sentence best supports this idea?", choices:["It can help them communicate with people from different countries.","Some languages have difficult pronunciation.","Many students have different hobbies.","Language classes can sometimes be long."], correctAnswer:"It can help them communicate with people from different countries.", explanation:"This sentence directly develops the topic sentence's idea about better opportunities through communication." },
+        { type:"single-choice", taskName:"Task 3 — Choose the Best Supporting Idea", question:"CHOOSE THE SENTENCE THAT BEST SUPPORTS THE TOPIC SENTENCE.", task:"Topic sentence: “Regular exercise is beneficial to students.” Which supporting idea is most relevant?", choices:["It can improve their physical health and reduce stress.","Sports shoes are available in many different sizes.","Some students prefer watching sports on television.","Football matches can attract large audiences."], correctAnswer:"It can improve their physical health and reduce stress.", explanation:"This sentence directly explains a benefit of exercise, supporting the topic sentence." },
+        { type:"single-choice", taskName:"Task 4 — Choose the Best Supporting Detail", question:"CHOOSE THE DETAIL THAT BEST SUPPORTS THE MAIN IDEA.", task:"Main idea: “Reading regularly can improve students' language skills.” Which detail best supports this idea?", choices:["For example, reading exposes students to new vocabulary and different sentence structures.","For example, many students enjoy reading before going to bed.","For example, books are available in many different sizes.","For example, some libraries are open at weekends."], correctAnswer:"For example, reading exposes students to new vocabulary and different sentence structures.", explanation:"This detail directly explains how reading improves language skills, unlike the other options." },
+        { type:"single-choice", taskName:"Task 4 — Choose the Best Supporting Detail", question:"CHOOSE THE DETAIL THAT BEST SUPPORTS THE MAIN IDEA.", task:"Main idea: “Using public transport can help protect the environment.” Which example best supports this idea?", choices:["For example, buses can carry many passengers and reduce the number of cars on the roads.","For example, some buses are more comfortable than others.","For example, passengers often listen to music while travelling.","For example, public transport can sometimes be crowded."], correctAnswer:"For example, buses can carry many passengers and reduce the number of cars on the roads.", explanation:"This example explains the environmental benefit directly, connecting fewer cars to environmental protection." },
+        { type:"single-choice", taskName:"Task 5 — Choose the Best Connector", question:"COMPLETE THE SENTENCE WITH THE MOST APPROPRIATE CONNECTOR.", task:"Students should develop good study habits. ______, they should organize their time effectively.", choices:["For example","In addition","However","Therefore"], correctAnswer:"In addition", explanation:"The second idea adds another point about good study habits, so “In addition” is correct." },
+        { type:"single-choice", taskName:"Task 5 — Choose the Best Connector", question:"COMPLETE THE SENTENCE WITH THE MOST APPROPRIATE CONNECTOR.", task:"Exercise has many benefits. ______, it can help people reduce stress and stay healthy.", choices:["For example","However","On the other hand","As a result"], correctAnswer:"For example", explanation:"The second sentence gives an example of the benefits of exercise, so “For example” is correct." },
+        { type:"single-choice", taskName:"Task 6 — Find the Irrelevant Sentence", question:"IDENTIFY THE SENTENCE THAT DOES NOT BELONG IN THE PARAGRAPH.", task:"Topic: The importance of education.\n1) Education helps people develop useful knowledge and skills.\n2) It can also increase their chances of finding good employment.\n3) Many students enjoy playing football after school.\n4) Moreover, education can help people become responsible members of society.", choices:["Sentence 1","Sentence 2","Sentence 3","Sentence 4"], correctAnswer:"Sentence 3", explanation:"Sentence 3 is about students' leisure activities, not the importance of education." },
+        { type:"sentence-ordering", taskName:"Task 7 — Put the Sentences in Order", question:"ARRANGE THE SENTENCES TO FORM A WELL-ORGANIZED PARAGRAPH.", structureHint:"Topic sentence → Supporting idea → Example → Conclusion", sentences:[{id:"A",text:"For example, students can use educational websites to research different topics."},{id:"B",text:"The Internet can be a useful tool for students."},{id:"C",text:"Therefore, students should learn how to use the Internet responsibly."},{id:"D",text:"It gives them access to a large amount of educational information."}], correctOrder:["B","D","A","C"], explanation:"The paragraph opens with the topic sentence (B), develops it with a supporting idea (D), gives an example (A), then closes with a conclusion (C)." },
+        { type:"sentence-ordering", taskName:"Task 7 — Put the Sentences in Order", question:"ARRANGE THE SENTENCES TO FORM A LOGICAL PARAGRAPH.", structureHint:"Topic sentence → Supporting idea → Example → Result", sentences:[{id:"A",text:"As a result, they can become healthier and more productive."},{id:"B",text:"Regular physical activity is important for young people."},{id:"C",text:"It helps them maintain a healthy body and reduce stress."},{id:"D",text:"For instance, walking, swimming, and playing sports can improve physical fitness."}], correctOrder:["B","C","D","A"], explanation:"The paragraph opens with the topic sentence (B), develops it with a supporting idea (C), gives examples (D), then closes with a result (A)." },
+        { type:"single-choice", taskName:"Task 8 — Choose the Best Concluding Sentence", question:"CHOOSE THE BEST CONCLUDING SENTENCE.", task:"Learning a foreign language has many advantages. First, it helps people communicate with foreigners. It can also increase their chances of finding better educational and employment opportunities. In addition, learning another language allows people to discover other cultures. In conclusion, ...", choices:["Learning a foreign language has many personal and professional benefits.","Many people speak different languages around the world.","Some foreign languages are more difficult than others.","Students usually learn languages at school."], correctAnswer:"Learning a foreign language has many personal and professional benefits.", explanation:"This sentence summarizes the benefits mentioned in the paragraph, making it the best conclusion." },
+        { type:"single-choice", taskName:"Task 8 — Choose the Best Concluding Sentence", question:"CHOOSE THE BEST CONCLUDING SENTENCE.", task:"Technology has changed the way students learn. They can now access educational websites, watch instructional videos, and communicate with teachers online. These tools can make learning more flexible and accessible. In brief, ...", choices:["Technology is used in many different countries.","Some students prefer traditional textbooks.","Technology can make education more accessible and flexible.","Computers and smartphones are popular among young people."], correctAnswer:"Technology can make education more accessible and flexible.", explanation:"This sentence summarizes the paragraph's main point about technology making learning more accessible and flexible." },
+        { type:"single-choice", taskName:"Task 9 — Build the Complete Paragraph", question:"CHOOSE THE SENTENCE THAT BEST COMPLETES THE PARAGRAPH.", task:"Volunteering can have several benefits for young people. First, it allows them to help other members of their community. It also helps them develop useful skills such as communication and teamwork. Moreover, volunteering can give them valuable experience for their future careers. Overall, ...", choices:["Volunteering can be a valuable experience for young people..","Some young people prefer spending their free time at home.","Community organizations sometimes need more volunteers.","Young people have different interests and hobbies."], correctAnswer:"Volunteering can be a valuable experience for young people..", explanation:"This sentence summarizes the benefits listed in the paragraph, making it the best concluding statement to complete it." }
+      ]
+    };
+
+    const state = {
+      currentIndex: 0,
+      answers: Array(quizConfig.questions.length).fill(null),
+      orders: {},
+      completed: false
+    };
+
+    const correctFeedback = ["Excellent!", "Great Job!", "Perfect!", "Keep Going!"];
+    const incorrectFeedback = ["Almost!", "Review this rule.", "Keep learning!", "You'll get the next one!"];
+
+    const timer = {
+      seconds: 0,
+      intervalId: null,
+      start() {
+        if (!this.intervalId) {
+          this.intervalId = setInterval(() => {
+            this.seconds++;
+            document.getElementById("timer-count").textContent = this.format();
+          }, 1000);
+        }
+      },
+      pause() {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      },
+      reset() {
+        this.pause();
+        this.seconds = 0;
+        document.getElementById("timer-count").textContent = this.format();
+      },
+      format() {
+        const minutes = String(Math.floor(this.seconds / 60)).padStart(2, "0");
+        const seconds = String(this.seconds % 60).padStart(2, "0");
+        return `${minutes}:${seconds}`;
+      }
+    };
+
+    function shuffle(items) {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function shuffledNotCorrect(question) {
+      let order = shuffle(question.sentences.map(sentence => sentence.id));
+      while (order.join("") === question.correctOrder.join("")) {
+        order = shuffle(question.sentences.map(sentence => sentence.id));
+      }
+      return order;
+    }
+
+    function playSound(type) {
+      try {
+        const audio = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+        const settings = {
+          correct: [660, 0.13],
+          wrong: [180, 0.16],
+          move: [420, 0.06],
+          complete: [523, 0.28]
+        }[type] || [350, 0.1];
+        oscillator.frequency.value = settings[0];
+        oscillator.type = type === "wrong" ? "sawtooth" : "sine";
+        gain.gain.setValueAtTime(0.06, audio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + settings[1]);
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+        oscillator.start();
+        oscillator.stop(audio.currentTime + settings[1]);
+      } catch (error) {}
+    }
+
+    function getScore() {
+      return state.answers.reduce((total, answer) => total + (answer && answer.correct ? 1 : 0), 0);
+    }
+
+    function getAnsweredCount() {
+      return state.answers.filter(Boolean).length;
+    }
+
+    function updateStats() {
+      const correct = getScore();
+      const answered = getAnsweredCount();
+      document.getElementById("correct-count").textContent = correct;
+      document.getElementById("wrong-count").textContent = answered - correct;
+      document.getElementById("remaining-count").textContent = quizConfig.questions.length - answered;
+      document.getElementById("score-count").textContent = `${correct.toFixed(2)} /15`;
+    }
+
+    function feedbackMarkup(isCorrect, explanation) {
+      const heading = isCorrect
+        ? correctFeedback[Math.floor(Math.random() * correctFeedback.length)]
+        : incorrectFeedback[Math.floor(Math.random() * incorrectFeedback.length)];
+      return `<div class="feedback show ${isCorrect ? "good" : "bad"}"><strong>${heading}</strong>${explanation}</div>`;
+    }
+
+    function renderSingleChoice(question, index) {
+      const existing = state.answers[index];
+      const choices = existing ? existing.choices : shuffle(question.choices);
+      if (!existing) state.answers[index] = null;
+
+      const panel = document.getElementById("question-panel");
+      panel.innerHTML = `
+        <div class="task-text">${question.task}</div>
+        <div class="choice-list" role="group" aria-label="Answer choices">
+          ${choices.map((choice, choiceIndex) => `
+            <button type="button" class="choice-btn" data-choice="${encodeURIComponent(choice)}" ${existing ? "disabled" : ""}>
+              <span class="choice-letter">${String.fromCharCode(65 + choiceIndex)}</span>
+              <span>${choice}</span>
+            </button>
+          `).join("")}
+        </div>
+        ${existing ? feedbackMarkup(existing.correct, question.explanation) : ""}
+      `;
+
+      panel.querySelectorAll(".choice-btn").forEach(button => {
+        const choice = decodeURIComponent(button.dataset.choice);
+        if (existing) {
+          if (choice === question.correctAnswer) button.classList.add("correct");
+          if (!existing.correct && choice === existing.value) button.classList.add("incorrect");
+        } else {
+          button.addEventListener("click", () => answerSingleChoice(index, choice, choices));
+        }
+      });
+    }
+
+    function answerSingleChoice(index, value, choices) {
+      const question = quizConfig.questions[index];
+      const correct = value === question.correctAnswer;
+      state.answers[index] = { correct, value, choices };
+      playSound(correct ? "correct" : "wrong");
+      updateStats();
+      renderQuestion();
+    }
+
+    function renderSentenceOrdering(question, index) {
+      if (!state.orders[index]) state.orders[index] = shuffledNotCorrect(question);
+      const order = state.orders[index];
+      const existing = state.answers[index];
+      const sentenceMap = Object.fromEntries(question.sentences.map(sentence => [sentence.id, sentence]));
+
+      const panel = document.getElementById("question-panel");
+      panel.innerHTML = `
+        <div class="hint-box">${question.structureHint}</div>
+        <div id="sentence-list" class="sentence-list" aria-label="Sentence ordering activity">
+          ${order.map((id, position) => {
+            const status = existing ? (question.correctOrder[position] === id ? "correct" : "incorrect") : "";
+            return `<article class="sentence-card ${status}" tabindex="0" draggable="${existing ? "false" : "true"}" data-id="${id}">
+              <span class="sentence-label">${id}</span>
+              <span>${sentenceMap[id].text}</span>
+              <span class="move-controls">
+                <button type="button" class="move-btn" data-move="up" aria-label="Move sentence ${id} up" ${existing || position === 0 ? "disabled" : ""}>▲</button>
+                <button type="button" class="move-btn" data-move="down" aria-label="Move sentence ${id} down" ${existing || position === order.length - 1 ? "disabled" : ""}>▼</button>
+              </span>
+            </article>`;
+          }).join("")}
+        </div>
+        <button id="check-order-btn" type="button" class="check-order-btn" ${existing ? "disabled" : ""}>Check Order</button>
+        ${existing && !existing.correct ? `<div class="correct-order"><strong>Correct Order:</strong><br>${question.correctOrder.map((id, orderIndex) => `${orderIndex + 1}. ${id} — ${sentenceMap[id].text}`).join("<br>")}</div>` : ""}
+        ${existing ? feedbackMarkup(existing.correct, question.explanation) : ""}
+      `;
+
+      if (!existing) {
+        initialiseOrderingControls(index);
+        document.getElementById("check-order-btn").addEventListener("click", () => evaluateOrder(index));
+      }
+    }
+
+    function moveSentence(index, sentenceId, direction) {
+      const order = state.orders[index];
+      const position = order.indexOf(sentenceId);
+      const newPosition = direction === "up" ? position - 1 : position + 1;
+      if (newPosition < 0 || newPosition >= order.length) return;
+      [order[position], order[newPosition]] = [order[newPosition], order[position]];
+      playSound("move");
+      renderQuestion();
+    }
+
+    function initialiseOrderingControls(index) {
+      const list = document.getElementById("sentence-list");
+      let draggedId = null;
+
+      list.querySelectorAll(".move-btn").forEach(button => {
+        button.addEventListener("click", event => {
+          const card = event.currentTarget.closest(".sentence-card");
+          moveSentence(index, card.dataset.id, event.currentTarget.dataset.move);
+        });
+      });
+
+      list.querySelectorAll(".sentence-card").forEach(card => {
+        card.addEventListener("keydown", event => {
+          if (event.target.classList.contains("move-btn")) return;
+          if (event.key === "ArrowUp") {
+            event.preventDefault();
+            moveSentence(index, card.dataset.id, "up");
+          }
+          if (event.key === "ArrowDown") {
+            event.preventDefault();
+            moveSentence(index, card.dataset.id, "down");
+          }
+        });
+
+        card.addEventListener("dragstart", event => {
+          draggedId = card.dataset.id;
+          card.classList.add("dragging");
+          event.dataTransfer.effectAllowed = "move";
+        });
+        card.addEventListener("dragend", () => {
+          card.classList.remove("dragging");
+          list.querySelectorAll(".sentence-card").forEach(item => item.classList.remove("drag-over"));
+        });
+        card.addEventListener("dragover", event => {
+          event.preventDefault();
+          if (card.dataset.id !== draggedId) card.classList.add("drag-over");
+        });
+        card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+        card.addEventListener("drop", event => {
+          event.preventDefault();
+          const targetId = card.dataset.id;
+          if (!draggedId || draggedId === targetId) return;
+          const order = state.orders[index];
+          const from = order.indexOf(draggedId);
+          const to = order.indexOf(targetId);
+          order.splice(from, 1);
+          order.splice(to, 0, draggedId);
+          playSound("move");
+          renderQuestion();
+        });
+
+        let touchStartY = 0;
+        card.addEventListener("touchstart", event => {
+          touchStartY = event.touches[0].clientY;
+        }, { passive: true });
+        card.addEventListener("touchend", event => {
+          const touchEndY = event.changedTouches[0].clientY;
+          const difference = touchEndY - touchStartY;
+          if (Math.abs(difference) > 36) {
+            moveSentence(index, card.dataset.id, difference < 0 ? "up" : "down");
+          }
+        }, { passive: true });
+      });
+    }
+
+    function evaluateOrder(index) {
+      const question = quizConfig.questions[index];
+      const order = state.orders[index];
+      const correct = order.every((id, position) => id === question.correctOrder[position]);
+      state.answers[index] = { correct, value: [...order] };
+      playSound(correct ? "correct" : "wrong");
+      updateStats();
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const question = quizConfig.questions[state.currentIndex];
+      document.getElementById("instruction-box").textContent = question.question;
+      document.getElementById("question-counter").textContent = `${state.currentIndex + 1} / ${quizConfig.questions.length}`;
+
+      if (question.type === "single-choice") {
+        renderSingleChoice(question, state.currentIndex);
+      } else {
+        renderSentenceOrdering(question, state.currentIndex);
+      }
+
+      const previous = document.getElementById("previous-btn");
+      const next = document.getElementById("next-btn");
+      previous.disabled = state.currentIndex === 0;
+      next.disabled = !state.answers[state.currentIndex];
+    }
+
+    function nextQuestion() {
+      if (!state.answers[state.currentIndex]) return;
+      if (state.currentIndex === quizConfig.questions.length - 1) {
+        showResults();
+      } else {
+        state.currentIndex++;
+        renderQuestion();
+      }
+    }
+
+    function previousQuestion() {
+      if (state.currentIndex > 0) {
+        state.currentIndex--;
+        renderQuestion();
+      }
+    }
+
+    function taskBreakdown() {
+      const tasks = [
+        ["Task 1 — Identify the Topic", [0]],
+        ["Task 2 — Choose the Topic Sentence", [1,2]],
+        ["Task 3 — Choose the Best Supporting Idea", [3,4]],
+        ["Task 4 — Choose the Best Supporting Detail", [5,6]],
+        ["Task 5 — Choose the Best Connector", [7,8]],
+        ["Task 6 — Find the Irrelevant Sentence", [9]],
+        ["Task 7 — Put the Sentences in Order", [10,11]],
+        ["Task 8 — Choose the Best Concluding Sentence", [12,13]],
+        ["Task 9 — Build the Complete Paragraph", [14]]
+      ];
+      return tasks.map(([name, indexes]) => ({
+        name,
+        score: indexes.reduce((sum, index) => sum + (state.answers[index]?.correct ? 1 : 0), 0),
+        total: indexes.length
+      }));
+    }
+
+    function remarkForScore(score) {
+      if (score >= 13) return "Excellent — You understand paragraph organization very well.";
+      if (score >= 10) return "Very Good — You have a good understanding with a few areas to improve.";
+      if (score >= 7) return "Good — Review paragraph structure and supporting details.";
+      if (score >= 4) return "Needs Improvement — Review topic sentences, supporting ideas, and conclusions.";
+      return "Keep Practising — Start by reviewing the basic structure of a paragraph.";
+    }
+
+    function animateRemark(finalRemark) {
+      const labels = ["Excellent", "Very Good", "Good", "Needs Improvement", "Keep Practising"];
+      const element = document.getElementById("remark");
+      let step = 0;
+      const cycle = setInterval(() => {
+        element.textContent = labels[step % labels.length];
+        step++;
+      }, 115);
+      setTimeout(() => {
+        clearInterval(cycle);
+        element.textContent = finalRemark;
+      }, 3000);
+    }
+
+    function showResults() {
+      timer.pause();
+      state.completed = true;
+      playSound("complete");
+
+      const score = getScore();
+      const attempts = Number(localStorage.getItem("paragraphQuizAttempts") || "0") + 1;
+      const previousBest = Number(localStorage.getItem("paragraphQuizBestScore") || "0");
+      const bestScore = Math.max(score, previousBest);
+
+      localStorage.setItem("paragraphQuizAttempts", attempts);
+      localStorage.setItem("paragraphQuizBestScore", bestScore);
+      localStorage.setItem("paragraphQuizLastScore", score);
+      localStorage.setItem("paragraphQuizTimeTaken", timer.format());
+
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.add("active");
+      document.getElementById("final-score").textContent = score.toFixed(2);
+
+      const correct = getScore();
+      const wrong = quizConfig.questions.length - correct;
+      const accuracy = ((correct / quizConfig.questions.length) * 100).toFixed(2);
+      document.getElementById("summary-grid").innerHTML = `
+        <div class="summary-item"><small>Final Score</small><b>${score.toFixed(2)} /15</b></div>
+        <div class="summary-item"><small>Correct Answers</small><b>${correct}</b></div>
+        <div class="summary-item"><small>Wrong Answers</small><b>${wrong}</b></div>
+        <div class="summary-item"><small>Accuracy</small><b>${accuracy}%</b></div>
+        <div class="summary-item"><small>Time Taken</small><b>${timer.format()}</b></div>
+        <div class="summary-item"><small>Attempts · Best Score</small><b>${attempts} · ${bestScore.toFixed(2)} /15</b></div>
+      `;
+
+      document.getElementById("task-breakdown").innerHTML = taskBreakdown()
+        .map(task => `<div class="breakdown-row"><span>${task.name}</span><strong>${task.score}/${task.total}</strong></div>`)
+        .join("");
+
+      animateRemark(remarkForScore(score));
+      if (score >= 13) createConfetti();
+    }
+
+    function createConfetti() {
+      const colors = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444", "#7c3aed"];
+      for (let i = 0; i < 85; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti";
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.setProperty("--x", `${(Math.random() - .5) * 260}px`);
+        piece.style.animationDelay = `${Math.random() * .7}s`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 4800);
+      }
+    }
+
+    function showReview() {
+      document.getElementById("result-screen").classList.remove("active");
+      document.getElementById("review-screen").classList.add("active");
+
+      const grouped = {};
+      quizConfig.questions.forEach((question, index) => {
+        if (!grouped[question.taskName]) grouped[question.taskName] = [];
+        grouped[question.taskName].push({question, index});
+      });
+
+      document.getElementById("review-content").innerHTML = Object.entries(grouped).map(([taskName, entries]) => `
+        <section class="review-task">
+          <h2>${taskName}</h2>
+          ${entries.map(({question, index}) => {
+            const answer = state.answers[index];
+            const isCorrect = answer.correct;
+            let details = "";
+            if (question.type === "single-choice") {
+              details = `<p><span class="review-answer-label">Student Answer:</span> ${answer.value}</p>
+                <p><span class="review-answer-label">Correct Answer:</span> ${question.correctAnswer}</p>`;
+            } else {
+              const sentenceMap = Object.fromEntries(question.sentences.map(item => [item.id, item.text]));
+              details = `<p><span class="review-answer-label">Student's Submitted Order:</span> ${answer.value.join(" → ")}</p>
+                <p><span class="review-answer-label">Correct Order:</span> ${question.correctOrder.join(" → ")}</p>
+                <p class="text-sm text-slate-600">${question.correctOrder.map(id => `${id}: ${sentenceMap[id]}`).join(" | ")}</p>`;
+            }
+            return `<article class="review-card ${isCorrect ? "correct-review" : "wrong-review"}">
+              <p><strong>Question ${index + 1}.</strong> ${question.question}</p>
+              ${details}
+              <p><span class="review-answer-label">Explanation:</span> ${question.explanation}</p>
+            </article>`;
+          }).join("")}
+        </section>
+      `).join("");
+    }
+
+    function buildReport() {
+      const score = getScore();
+      return [
+        "WRITING A PARAGRAPH — PARAGRAPH WRITING QUIZ",
+        "----------------------------------------------",
+        `Final Score: ${score.toFixed(2)} /15`,
+        `Correct Answers: ${score}`,
+        `Wrong Answers: ${quizConfig.questions.length - score}`,
+        `Accuracy: ${((score / quizConfig.questions.length) * 100).toFixed(2)}%`,
+        `Time Taken: ${timer.format()}`,
+        "",
+        "TASK BREAKDOWN",
+        ...taskBreakdown().map(task => `${task.name}: ${task.score}/${task.total}`)
+      ].join("\n");
+    }
+
+    function printResults() {
+      const report = buildReport().replace(/\n/g, "<br>");
+      const printable = window.open("", "_blank");
+      if (!printable) return;
+      printable.document.write(`<html><head><title>Quiz Results</title><style>body{font-family:Poppins,Arial,sans-serif;padding:36px;color:#1e293b}h1{color:#123b70}</style></head><body><h1>Writing a Paragraph Quiz Results</h1><p>${report}</p></body></html>`);
+      printable.document.close();
+      printable.focus();
+      printable.print();
+    }
+
+    function saveResults() {
+      const blob = new Blob([buildReport()], {type:"text/plain"});
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "writing-a-paragraph-quiz-results.txt";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function restartQuiz() {
+      state.currentIndex = 0;
+      state.answers = Array(quizConfig.questions.length).fill(null);
+      state.orders = {};
+      state.completed = false;
+      timer.reset();
+      document.getElementById("review-screen").classList.remove("active");
+      document.getElementById("result-screen").classList.remove("active");
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      updateStats();
+      renderQuestion();
+      timer.start();
+    }
+
+    document.getElementById("previous-btn").addEventListener("click", previousQuestion);
+    document.getElementById("next-btn").addEventListener("click", nextQuestion);
+    document.getElementById("review-btn").addEventListener("click", showReview);
+    document.getElementById("restart-btn").addEventListener("click", restartQuiz);
+    document.getElementById("back-results-btn").addEventListener("click", () => {
+      document.getElementById("review-screen").classList.remove("active");
+      document.getElementById("result-screen").classList.add("active");
+    });
+    document.getElementById("print-btn").addEventListener("click", printResults);
+    document.getElementById("save-btn").addEventListener("click", saveResults);
+
+    document.addEventListener("keydown", event => {
+      if (state.completed) return;
+      const question = quizConfig.questions[state.currentIndex];
+
+      if (question.type === "single-choice" && !state.answers[state.currentIndex]) {
+        if (/^[1-4]$/.test(event.key)) {
+          const buttons = [...document.querySelectorAll(".choice-btn")];
+          const button = buttons[Number(event.key) - 1];
+          if (button) button.click();
+        }
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+          event.preventDefault();
+          const buttons = [...document.querySelectorAll(".choice-btn")];
+          const current = document.activeElement;
+          const next = buttons[(Math.max(0, buttons.indexOf(current)) + 1) % buttons.length];
+          next.focus();
+        }
+        if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+          event.preventDefault();
+          const buttons = [...document.querySelectorAll(".choice-btn")];
+          const current = document.activeElement;
+          const position = buttons.indexOf(current);
+          buttons[(position <= 0 ? buttons.length : position) - 1].focus();
+        }
+      }
+
+      if (question.type === "sentence-ordering" && !state.answers[state.currentIndex] && event.key === "Enter") {
+        const checkButton = document.getElementById("check-order-btn");
+        if (checkButton) checkButton.click();
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      updateStats();
+      renderQuestion();
+      timer.start();
+      lucide.createIcons();
+    });
+  </script>
+ 
+</body></html>
